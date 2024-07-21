@@ -3,73 +3,44 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Déclenche le workflow à chaque push sur la branche 'main'
+      - main
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '14'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run tests
-      run: npm test
+      - name: Run tests
+        run: npm test
 
-  build:
+  docker:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build-and-test
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Build Docker image
+        run: docker build -t calculatrice-web .
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.wafooliver }}
-        password: ${{ secrets.@zertY12+ }}
-
-    - name: Build Docker image
-      uses: docker/build-push-action@v3
-      with:
-        push: false  # Construire l'image sans pousser pour le moment
-        tags: currency-converter:latest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Push Docker image
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/currency-converter:latest
-
-    - name: Deploy to server
-      env:
-        DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
-        DOCKER_TLS_VERIFY: ${{ secrets.DOCKER_TLS_VERIFY }}
-        DOCKER_CERT_PATH: ${{ secrets.DOCKER_CERT_PATH }}
-      run: |
-        echo "Deploying to server..."
-        # Exemple de déploiement via SSH (remplacez par votre propre commande)
-        ssh user@host "docker pull ${{ secrets.DOCKER_USERNAME }}/currency-converter:latest && docker run -d -p 80:80 ${{ secrets.DOCKER_USERNAME }}/currency-converter:latest"
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: wafoolivier
+          password: "@zertY12+"
+      - name: Push Docker image
+        run: |
+          docker tag convers wafooliver/convers:latest
+          docker push wafooliver/convers:latest

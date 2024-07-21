@@ -19,17 +19,20 @@ describe('convertCurrency', () => {
         global.document = document;
     });
 
+     // Test pour vérifier que la conversion de USD à EUR se fait correctement.
     test('should convert USD to EUR correctly', () => {
         convertCurrency();
         expect(document.getElementById('result').innerText).toBe('100 USD = 85.00 EUR');
     });
 
+    // Test pour vérifier que la fonction gère les montants invalides correctement.
     test('should handle invalid amount', () => {
         document.getElementById('amount').value = '-50';
         convertCurrency();
         expect(document.getElementById('result').innerText).toBe('S\'il vous plait entrer un montant valide');
     });
 
+    // Test pour vérifier que la fonction gère les conversions avec la même devise correctement.
     test('should handle same currency conversion', () => {
         document.getElementById('toCurrency').value = 'USD';
         convertCurrency();

@@ -6,6 +6,7 @@ const exchangeRates = {
 
 
 function convertCurrency() {
+    // recupere les information saisie
     const amount = parseFloat(document.getElementById('amount').value);
     const fromCurrency = document.getElementById('fromCurrency').value;
     const toCurrency = document.getElementById('toCurrency').value;
