@@ -27,3 +27,7 @@ function convertCurrency() {
 
     document.getElementById('result').innerText = `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
 }
+
+
+
+module.exports = { convertCurrency };
